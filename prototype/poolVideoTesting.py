@@ -54,8 +54,11 @@ def classify_balls(balls, frame):
         black_mask = cv2.inRange(cropped_frame, dark_black, light_black)
         black_mask = cv2.bitwise_and(mask, black_mask)
 
-        dark_pink = (90, 140, 230)
-        light_pink = (125 + X, 170 + X, 255)
+        #dark_pink = (90, 140, 230)
+        dark_pink = (90, 140, 255)
+        #light_pink = (125 + X, 170 + X, 255)
+        light_pink = (180 + X, 150 + X, 255)
+
         pink_mask = cv2.inRange(cropped_frame, dark_pink, light_pink)
         pink_mask = cv2.bitwise_and(mask, pink_mask)
 
@@ -69,8 +72,8 @@ def classify_balls(balls, frame):
         yellow_mask = cv2.inRange(cropped_frame, dark_yellow, light_yellow)
         yellow_mask = cv2.bitwise_and(mask, yellow_mask)
 
-        dark_brown = (0, 100, 100)
-        light_brown = (15 + X, 115 + X, 140 + X)
+        dark_brown = (0, 90, 90)
+        light_brown = (15 + X, 95 + X, 140 + X)
         brown_mask = cv2.inRange(cropped_frame, dark_brown, light_brown)
         brown_mask = cv2.bitwise_and(mask, brown_mask)
 
@@ -148,10 +151,18 @@ def main():
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter('output.mp4', fourcc, cap_fps, (cap_width, cap_height))
 
+    points = 0
+    last_was_red = False
     current_red = 0
     max_red = 0
-    elapsed = 0
-    points = 0
+    elapsed_red = 0
+    elapsed_yellow = 0
+    elapsed_green = 0
+    elapsed_brown = 0
+    elapsed_blue = 0
+    elapsed_pink = 0
+    elapsed_black = 0
+    
 
     while True:
         # Capture frame-by-frame
@@ -188,20 +199,83 @@ def main():
             max_red = len(red)
         
         # ha mondjuk csökkent 1-gyel a pirosak száma, és 3 mp-ig nem változik, akkor változzon a pontérték
-        if current_red > len(red):
-            elapsed += 1
+        if current_red > len(red) and not last_was_red:
+            elapsed_red += 1
         else:
             current_red = len(red)
-            elapsed = 0
+            elapsed_red = 0
 
-        print(elapsed)
+        if len(yellow) == 0 and last_was_red:
+            elapsed_yellow += 1
+        else:
+            elapsed_yellow = 0
 
-        if elapsed == cap_fps * 4:
+        if len(green) == 0 and last_was_red:
+            elapsed_green += 1
+        else:
+            elapsed_green = 0
+
+        if len(brown) == 0 and last_was_red:
+            elapsed_brown += 1
+        else:
+            elapsed_brown = 0
+
+        if len(blue) == 0 and last_was_red:
+            elapsed_blue += 1
+        else:
+            elapsed_blue = 0
+
+        if len(pink) == 0 and last_was_red:
+            elapsed_pink += 1
+        else:
+            elapsed_pink = 0
+
+        if len(black) == 0 and last_was_red:
+            elapsed_black += 1
+        else:
+            elapsed_black = 0
+
+
+        #print(elapsed_black)
+
+
+        if elapsed_red == cap_fps * 4:
             points += 1
             current_red = len(red)
-            elapsed = 0
+            last_was_red = True
+
+        if elapsed_yellow == cap_fps * 2:
+            points += 2
+            last_was_red = False
+
+        if elapsed_green == cap_fps * 2:
+            points += 3
+            last_was_red = False
+
+        if elapsed_brown == cap_fps * 2:
+            points += 4
+            last_was_red = False
+
+        if elapsed_blue == cap_fps * 2:
+            points += 5
+            last_was_red = False
+
+        if elapsed_pink == cap_fps * 2:
+            points += 6
+            last_was_red = False
+
+        if elapsed_black == cap_fps * 2:
+            points += 7
+            last_was_red = False
         
-        #draw_counter(max_red - len(red), frame)
+
+        # a végén ha már nincs piros golyó fent, lemegy még egy színes,
+        # és akkor utána a last_was_red dolog már nem kell
+        # onnantól minden lelökött golyóért egyszer kaphatunk pontot,
+        # nehogy egyszer véletlen újra érzékeljen valamit, és újra adjon pontot
+        # 127 pontnak kell a végén kijönni
+        # TODO
+
         draw_counter(points, frame)
 
         out.write(frame)
