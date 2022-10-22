@@ -5,6 +5,12 @@ import cv2
 
 # in vs code for pylint: pylint --generate-rcfile > .pylintrc
 
+font = cv2.FONT_HERSHEY_DUPLEX
+fontScale = 1
+fontColor = (255,255,255)
+thickness = 2
+lineType = 2
+
 # FUNCTIONS
 
 def find_balls(frame):
@@ -74,7 +80,7 @@ def classify_balls(balls, frame):
         green_mask = cv2.bitwise_and(mask, green_mask)
 
         # Ha bizonyos számú pixel van az adott színből a detektált körben, akkor az adott szín listájához hozzáadódik
-        MIN = 25
+        MIN = 35
         if np.sum(red_mask == 255) > MIN:
             red.append(ball)
         elif np.sum(black_mask == 255) > MIN:
@@ -101,9 +107,19 @@ def draw_circles(circles, color, frame):
             # cv2.circle(frame, (x, y), 2, (0, 255, 255), 3)
 
 
+def draw_points(circles, number, frame):
+    if circles is not None:
+        detected_circles = np.uint16(np.around(circles))
+        for (x, y, r) in detected_circles:
+            cv2.putText(frame, number, (x, y), font, fontScale, fontColor, thickness, lineType)
+
+
+def draw_counter(point, frame):
+    cv2.putText(frame, "Points: " + str(point), (50, 50), font, fontScale, fontColor, thickness, lineType)
+
+
 def transform_frame(frame):
     gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
     return gray_frame
 
 
@@ -132,6 +148,11 @@ def main():
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter('output.mp4', fourcc, cap_fps, (cap_width, cap_height))
 
+    current_red = 0
+    max_red = 0
+    elapsed = 0
+    points = 0
+
     while True:
         # Capture frame-by-frame
         ret, frame = cap.read()
@@ -153,6 +174,35 @@ def main():
         draw_circles(yellow, (0, 255, 255), frame)
         draw_circles(brown, (42, 42, 165), frame)
         draw_circles(green, (0, 255, 0), frame)
+        
+        draw_points(black, "7", frame)
+        draw_points(pink, "6", frame)
+        draw_points(blue, "5", frame)
+        draw_points(brown, "4", frame)
+        draw_points(green, "3", frame)
+        draw_points(yellow, "2", frame)
+        draw_points(red, "1", frame)
+
+        # mennyi piros golyónk van kezdetben
+        if len(red) > max_red:
+            max_red = len(red)
+        
+        # ha mondjuk csökkent 1-gyel a pirosak száma, és 3 mp-ig nem változik, akkor változzon a pontérték
+        if current_red > len(red):
+            elapsed += 1
+        else:
+            current_red = len(red)
+            elapsed = 0
+
+        print(elapsed)
+
+        if elapsed == cap_fps * 4:
+            points += 1
+            current_red = len(red)
+            elapsed = 0
+        
+        #draw_counter(max_red - len(red), frame)
+        draw_counter(points, frame)
 
         out.write(frame)
 
