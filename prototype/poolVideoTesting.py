@@ -2,7 +2,6 @@ import sys
 import numpy as np
 import cv2
 
-
 # in vs code for pylint: pylint --generate-rcfile > .pylintrc
 
 font = cv2.FONT_HERSHEY_DUPLEX
@@ -143,10 +142,6 @@ def main():
 
     # Define the codec and create VideoWriter object
 
-    # AVI
-    # fourcc = cv2.VideoWriter_fourcc(*'XVID')
-    # out = cv2.VideoWriter('output.avi', fourcc, cap_fps, (cap_width, cap_height))
-
     # MP4
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter('output.mp4', fourcc, cap_fps, (cap_width, cap_height))
@@ -154,7 +149,6 @@ def main():
     points = 0
     last_was_red = False
     current_red = 0
-    max_red = 0
     elapsed_red = 0
     elapsed_yellow = 0
     elapsed_green = 0
@@ -193,10 +187,6 @@ def main():
         draw_points(green, "3", frame)
         draw_points(yellow, "2", frame)
         draw_points(red, "1", frame)
-
-        # mennyi piros golyónk van kezdetben
-        if len(red) > max_red:
-            max_red = len(red)
         
         # ha mondjuk csökkent 1-gyel a pirosak száma, és 3 mp-ig nem változik, akkor változzon a pontérték
         if current_red > len(red) and not last_was_red:
@@ -236,8 +226,6 @@ def main():
             elapsed_black = 0
 
 
-        #print(elapsed_black)
-
 
         if elapsed_red == cap_fps * 4:
             points += 1
@@ -274,7 +262,8 @@ def main():
         # onnantól minden lelökött golyóért egyszer kaphatunk pontot,
         # nehogy egyszer véletlen újra érzékeljen valamit, és újra adjon pontot
         # 127 pontnak kell a végén kijönni
-        # TODO
+        if current_red == 0:
+            last_was_red = True
 
         draw_counter(points, frame)
 
