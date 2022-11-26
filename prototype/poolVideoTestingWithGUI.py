@@ -155,7 +155,7 @@ class VideoThread(QThread):
         self.elapsed_black = 0
 
     def run(self):
-        cap = cv2.VideoCapture("snooker_1.mp4")
+        cap = cv2.VideoCapture(self.video)
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         cap_fps = cap.get(cv2.CAP_PROP_FPS)
@@ -342,6 +342,8 @@ class App(QWidget):
     def open_file(self):
         filename, _ = QFileDialog.getOpenFileName(self, "Open Video")
         
+        print(filename)
+
         if filename != '':
             if not self.vid_thr.isRunning():
                 self.vid_thr.set_video(filename)

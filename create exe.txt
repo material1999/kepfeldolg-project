@@ -1,0 +1,2 @@
+// futtatható fájl kigenerálása
+python3.9 -m PyInstaller --onefile --noconsole --icon=snooker_sport_icon.ico poolVideoTestingWithGUI.py -n SnookerCounter
