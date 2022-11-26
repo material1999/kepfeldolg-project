@@ -1,2 +1,5 @@
-// futtatható fájl kigenerálása
+source venv/Scripts/activate
 python3.9 -m PyInstaller --onefile --noconsole --icon=snooker_sport_icon.ico poolVideoTestingWithGUI.py -n SnookerCounter
+
+venv\Scripts\activate
+pyinstaller --onefile --noconsole --icon="snooker_sport_icon.ico" .\poolVideoTestingWithGUI.py -n SnookerCounter
