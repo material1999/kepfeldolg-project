@@ -2,19 +2,20 @@
 
 ## Téma: 
 
-Videófelvételeken a snooker aszalon mozgó golyók nyomkövetése és a találatok detektálása a lyukba guruló golyók pontértékének (színének) meghatározásával.
+Videófelvételeken a snooker asztalon mozgó golyók nyomkövetése és a találatok detektálása a lyukba guruló golyók pontértékének (színének) meghatározásával.
 
 ## Feladat megvalósítása: 
 
-Python nyelven, az OpenCv, NumPy, Sys és PyQt5 csomagok használatával. 
+Python nyelven, az OpenCv, NumPy, Sys és PyQt5 csomagok használatával.
 
 ## Használati útmutató:
 
 ### Használathoz szükséges nyelvek és csomagok: 
 
-- Python3.9
-- PyQt5 
-- requirements.txt-ben felsorolt csomagok adott verziója 
+- Python3
+- PyQt5
+- OpenCV
+- NumPy
 
 ### A kódbázis használata 
 
